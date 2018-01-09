@@ -1,4 +1,4 @@
-package testtask.slatestudio.locationchecker.geotracking;
+package testtask.slatestudio.locationchecker.tracking.gps;
 
 import android.annotation.SuppressLint;
 import android.location.Location;
@@ -18,19 +18,19 @@ import testtask.slatestudio.locationchecker.App;
  * @author Roman
  * @since 1/9/2018.
  */
-public class GeoTracker {
+public class GPSTracker {
 
-    private static final String TAG = GeoTracker.class.getSimpleName();
+    private static final String TAG = GPSTracker.class.getSimpleName();
     private static final long UPDATE_INTERVAL_IN_MILLISECONDS = 1000;
     private static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS = 1000;
-    private static final GeoTracker instance = new GeoTracker();
+    private static final GPSTracker instance = new GPSTracker();
     private final LocationRequest locationRequest;
     private FusedLocationProviderClient fusedLocationClient;
     private LocationCallback locationCallback;
-    private GPSCallback<GPSPoint> GPSCallback;
+    private GPSCallback<GPSPoint> gpsCallback;
 
     @SuppressLint("MissingPermission")
-    private GeoTracker() {
+    private GPSTracker() {
         locationRequest = new LocationRequest();
         locationRequest.setInterval(UPDATE_INTERVAL_IN_MILLISECONDS);
         locationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS);
@@ -45,8 +45,8 @@ public class GeoTracker {
                 Location currentLocation = locationResult.getLastLocation();
                 GPSPoint gpsPoint = new GPSPoint(currentLocation.getLatitude(), currentLocation.getLongitude());
                 Log.i(TAG, "Geo callback results: " + gpsPoint);
-                if (null != GPSCallback) {
-                    GPSCallback.update(gpsPoint);
+                if (gpsCallback != null) {
+                    gpsCallback.update(gpsPoint);
                 }
             }
         };
@@ -55,12 +55,12 @@ public class GeoTracker {
         fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper());
     }
 
-    public static GeoTracker instance() {
+    public static GPSTracker instance() {
         return instance;
     }
 
     public void onChange(GPSCallback<GPSPoint> GPSCallback) {
-        this.GPSCallback = GPSCallback;
+        this.gpsCallback = GPSCallback;
     }
 
     public void stop() {
@@ -69,7 +69,7 @@ public class GeoTracker {
     }
 
     @SuppressLint("MissingPermission")
-    public void refresh() {
+    public void start() {
         fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper());
     }
 

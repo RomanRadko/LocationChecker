@@ -1,4 +1,4 @@
-package testtask.slatestudio.locationchecker.networktracking;
+package testtask.slatestudio.locationchecker.tracking.wifi;
 
 /**
  * @author Roman Radko
@@ -7,4 +7,5 @@ package testtask.slatestudio.locationchecker.networktracking;
 public interface WifiReceiverCallback {
 
     void onUpdate(String wifiNetworkName);
+
 }

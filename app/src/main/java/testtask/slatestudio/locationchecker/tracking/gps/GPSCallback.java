@@ -1,4 +1,4 @@
-package testtask.slatestudio.locationchecker.geotracking;
+package testtask.slatestudio.locationchecker.tracking.gps;
 
 /**
  * @author Roman

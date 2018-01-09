@@ -18,11 +18,11 @@ import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import testtask.slatestudio.locationchecker.geotracking.GPSPoint;
-import testtask.slatestudio.locationchecker.geotracking.GeoTracker;
-import testtask.slatestudio.locationchecker.geotracking.GPSCallback;
-import testtask.slatestudio.locationchecker.networktracking.WifiBroadcastReceiver;
-import testtask.slatestudio.locationchecker.networktracking.WifiReceiverCallback;
+import testtask.slatestudio.locationchecker.tracking.gps.GPSPoint;
+import testtask.slatestudio.locationchecker.tracking.gps.GPSTracker;
+import testtask.slatestudio.locationchecker.tracking.gps.GPSCallback;
+import testtask.slatestudio.locationchecker.tracking.wifi.WifiBroadcastReceiver;
+import testtask.slatestudio.locationchecker.tracking.wifi.WifiReceiverCallback;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -47,17 +47,16 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.network_name)
     EditText networkNameInput;
 
-    private WifiBroadcastReceiver wifiReceiver;
-
     @OnClick(R.id.refresh_btn)
     void refresh() {
-        GeoTracker.instance().refresh();
+        GPSTracker.instance().start();
     }
 
-    private Double geoPointLatitude;
-    private Double geoPointLongtitude;
+    private double geoPointLatitude;
+    private double geoPointLongtitude;
     private int radius;
     private String networkName;
+    private WifiBroadcastReceiver wifiReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        GeoTracker.instance().stop();
+        GPSTracker.instance().stop();
     }
 
     private void checkPermissionAndStartGeoTracker() {
@@ -115,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void onPermissionResult(boolean permissionGranted) {
         if (permissionGranted) {
-            initGeoTracker();
+            startGeoTracker();
         } else {
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
@@ -124,8 +123,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void initGeoTracker() {
-        GeoTracker.instance().onChange(new GPSCallback<GPSPoint>() {
+    private void startGeoTracker() {
+        GPSTracker.instance().start();
+        GPSTracker.instance().onChange(new GPSCallback<GPSPoint>() {
             @Override
             public void update(GPSPoint gpsPoint) {
                 gpsPointLabel.setText(gpsPoint.toString());

@@ -22,7 +22,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <receiver android:name="testtask.slatestudio.locationchecker.networktracking.WifiBroadcastReceiver">
+        <receiver android:name="testtask.slatestudio.locationchecker.tracking.wifi.WifiBroadcastReceiver">
             <intent-filter>
                 <action android:name="android.net.wifi.STATE_CHANGE" />
             </intent-filter>

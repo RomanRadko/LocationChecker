@@ -1,4 +1,4 @@
-package testtask.slatestudio.locationchecker.networktracking;
+package testtask.slatestudio.locationchecker.tracking.wifi;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
