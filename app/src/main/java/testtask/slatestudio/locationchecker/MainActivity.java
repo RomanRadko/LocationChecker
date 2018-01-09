@@ -1,10 +1,16 @@
 package testtask.slatestudio.locationchecker;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -12,13 +18,22 @@ import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import testtask.slatestudio.locationchecker.geotracking.GPSPoint;
+import testtask.slatestudio.locationchecker.geotracking.GeoTracker;
+import testtask.slatestudio.locationchecker.geotracking.GPSCallback;
+import testtask.slatestudio.locationchecker.networktracking.WifiBroadcastReceiver;
+import testtask.slatestudio.locationchecker.networktracking.WifiReceiverCallback;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
+    private static final int READ_LOCATION_PERMISSION_REQUEST_CODE = 1;
 
     @BindView(R.id.is_in_range)
     TextView isInRangeLabel;
+
+    @BindView(R.id.gps_point_label)
+    TextView gpsPointLabel;
 
     @BindView(R.id.geo_point_latitude)
     EditText geoPointLatitudeInput;
@@ -32,13 +47,15 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.network_name)
     EditText networkNameInput;
 
-    @OnClick(R.id.check_btn)
-    void check() {
-        isInRangeLabel.setText(isInLocation() ? R.string.in_range : R.string.not_in_ranage);
+    private WifiBroadcastReceiver wifiReceiver;
+
+    @OnClick(R.id.refresh_btn)
+    void refresh() {
+        GeoTracker.instance().refresh();
     }
 
-    private int geoPointLatitiude;
-    private int geoPointLongtitude;
+    private Double geoPointLatitude;
+    private Double geoPointLongtitude;
     private int radius;
     private String networkName;
 
@@ -48,14 +65,102 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         fetchParameters();
-        isInLocation();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == READ_LOCATION_PERMISSION_REQUEST_CODE && permissions.length > 0) {
+            boolean granted = true;
+            for (int i = 0; i < permissions.length; i++) {
+                granted = granted && (grantResults[i] == PackageManager.PERMISSION_GRANTED);
+            }
+            onPermissionResult(granted);
+        } else {
+            onPermissionResult(false);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        initWifiReceiver();
+        checkPermissionAndStartGeoTracker();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (wifiReceiver != null) {
+            unregisterReceiver(wifiReceiver);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        GeoTracker.instance().stop();
+    }
+
+    private void checkPermissionAndStartGeoTracker() {
+        if (hasPermissions()) {
+            onPermissionResult(true);
+        } else {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.ACCESS_COARSE_LOCATION},
+                    READ_LOCATION_PERMISSION_REQUEST_CODE
+            );
+        }
+    }
+
+    private void onPermissionResult(boolean permissionGranted) {
+        if (permissionGranted) {
+            initGeoTracker();
+        } else {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
+                    READ_LOCATION_PERMISSION_REQUEST_CODE
+            );
+        }
+    }
+
+    private void initGeoTracker() {
+        GeoTracker.instance().onChange(new GPSCallback<GPSPoint>() {
+            @Override
+            public void update(GPSPoint gpsPoint) {
+                gpsPointLabel.setText(gpsPoint.toString());
+                Log.d(TAG, "gpsPoint: " + gpsPoint);
+                markIsLocated(isInWifiZone() || isInGeoRange(gpsPoint));
+            }
+        });
+    }
+
+    private boolean hasPermissions() {
+        final int resultFineLocation = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
+        final int resultCoarseLocation = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION);
+        return resultFineLocation == PackageManager.PERMISSION_GRANTED && resultCoarseLocation == PackageManager.PERMISSION_GRANTED;
+    }
+
+    private void initWifiReceiver() {
+        wifiReceiver = new WifiBroadcastReceiver(new WifiReceiverCallback() {
+            @Override
+            public void onUpdate(String wifiName) {
+                markIsLocated(networkName.equals(wifiName));
+            }
+        });
+        IntentFilter updateIntentFilter = new IntentFilter(WifiManager.NETWORK_STATE_CHANGED_ACTION);
+        registerReceiver(wifiReceiver, updateIntentFilter);
     }
 
     private void fetchParameters() {
-        geoPointLatitiude = Integer.parseInt(geoPointLatitudeInput.getText().toString());
-        geoPointLongtitude = Integer.parseInt(geoPointLongtitudeInput.getText().toString());
+        geoPointLatitude = Double.parseDouble(geoPointLatitudeInput.getText().toString());
+        geoPointLongtitude = Double.parseDouble(geoPointLongtitudeInput.getText().toString());
         radius = Integer.parseInt(radiusInput.getText().toString());
         networkName = networkNameInput.getText().toString();
+    }
+
+    private void markIsLocated(boolean isLocated) {
+        isInRangeLabel.setText(isLocated ? R.string.in_range : R.string.not_in_ranage);
     }
 
     private boolean isInWifiZone() {
@@ -71,13 +176,7 @@ public class MainActivity extends AppCompatActivity {
         return connected;
     }
 
-    private boolean isInGeoZone() {
-        //TODO:
-        return false;
+    private boolean isInGeoRange(GPSPoint point) {
+        return point.isInRange(geoPointLatitude, geoPointLongtitude, radius);
     }
-
-    private boolean isInLocation() {
-        return isInWifiZone();
-    }
-
 }

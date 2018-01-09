@@ -17,7 +17,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="undefined" />
+            android:text="@string/undefined" />
+
+        <TextView
+            android:id="@+id/gps_point_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/undefined" />
 
         <EditText
             android:id="@+id/geo_point_latitude"
@@ -52,11 +59,11 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <Button
-            android:id="@+id/check_btn"
+            android:id="@+id/refresh_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="@string/check_btn_txt" />
+            android:text="@string/refresh_btn_txt" />
     </LinearLayout>
 
 </FrameLayout>

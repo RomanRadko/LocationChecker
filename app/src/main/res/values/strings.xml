@@ -3,9 +3,10 @@
     <string name="geo_point_hint">Geo point</string>
     <string name="radius_hint">Radius</string>
     <string name="network_name_hint">Network name</string>
-    <string name="check_btn_txt">Check</string>
+    <string name="refresh_btn_txt">Refresh</string>
     <string name="geo_point_latitude_hint">Latitude</string>
     <string name="geo_point_longtitude_hint">Longtitude</string>
     <string name="in_range">In Range</string>
     <string name="not_in_ranage">Not in range</string>
+    <string name="undefined">Undefined</string>
 </resources>
