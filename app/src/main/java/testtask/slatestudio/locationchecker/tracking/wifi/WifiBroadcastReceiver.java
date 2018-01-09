@@ -16,7 +16,6 @@ public class WifiBroadcastReceiver extends BroadcastReceiver {
 
     private static final String TAG = WifiBroadcastReceiver.class.getSimpleName();
     private static final String EMPTY = "";
-    private Context context;
     private WifiReceiverCallback callback;
 
     public WifiBroadcastReceiver(WifiReceiverCallback callback) {
@@ -25,17 +24,16 @@ public class WifiBroadcastReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        this.context = context;
         String action = intent.getAction();
         if (WifiManager.SUPPLICANT_STATE_CHANGED_ACTION.equals(action)) {
             SupplicantState state = intent.getParcelableExtra(WifiManager.EXTRA_NEW_STATE);
             if (SupplicantState.isValidState(state) && state == SupplicantState.COMPLETED) {
-                callback.onUpdate(getWifiZoneName());
+                callback.onCurrentWifiChanged(getWifiZoneName(context));
             }
         }
     }
 
-    private String getWifiZoneName() {
+    private String getWifiZoneName(Context context) {
         WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
         WifiInfo wifi = wifiManager.getConnectionInfo();
         if (wifi != null) {

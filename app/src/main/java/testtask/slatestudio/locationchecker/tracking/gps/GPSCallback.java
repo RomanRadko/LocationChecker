@@ -6,5 +6,5 @@ package testtask.slatestudio.locationchecker.tracking.gps;
  */
 public interface GPSCallback<T> {
 
-    void update(T t);
+    void onLocationChanged(T t);
 }

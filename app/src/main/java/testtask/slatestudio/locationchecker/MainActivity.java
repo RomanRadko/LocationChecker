@@ -117,7 +117,8 @@ public class MainActivity extends AppCompatActivity {
             startGeoTracker();
         } else {
             ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.ACCESS_COARSE_LOCATION},
                     READ_LOCATION_PERMISSION_REQUEST_CODE
             );
         }
@@ -127,10 +128,10 @@ public class MainActivity extends AppCompatActivity {
         GPSTracker.instance().start();
         GPSTracker.instance().onChange(new GPSCallback<GPSPoint>() {
             @Override
-            public void update(GPSPoint gpsPoint) {
-                gpsPointLabel.setText(gpsPoint.toString());
-                Log.d(TAG, "gpsPoint: " + gpsPoint);
-                markIsLocated(isInWifiZone() || isInGeoRange(gpsPoint));
+            public void onLocationChanged(GPSPoint newLocation) {
+                gpsPointLabel.setText(newLocation.toString());
+                Log.d(TAG, "newLocation: " + newLocation);
+                markIsLocated(isInWifiZone() || isInGeoRange(newLocation));
             }
         });
     }
@@ -144,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
     private void initWifiReceiver() {
         wifiReceiver = new WifiBroadcastReceiver(new WifiReceiverCallback() {
             @Override
-            public void onUpdate(String wifiName) {
+            public void onCurrentWifiChanged(String wifiName) {
                 markIsLocated(networkName.equals(wifiName));
             }
         });

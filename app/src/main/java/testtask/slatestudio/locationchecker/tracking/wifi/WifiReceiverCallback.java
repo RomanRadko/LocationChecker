@@ -6,6 +6,6 @@ package testtask.slatestudio.locationchecker.tracking.wifi;
  */
 public interface WifiReceiverCallback {
 
-    void onUpdate(String wifiNetworkName);
+    void onCurrentWifiChanged(String wifiNetworkName);
 
 }

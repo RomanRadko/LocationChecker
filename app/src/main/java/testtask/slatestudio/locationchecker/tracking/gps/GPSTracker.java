@@ -46,7 +46,7 @@ public class GPSTracker {
                 GPSPoint gpsPoint = new GPSPoint(currentLocation.getLatitude(), currentLocation.getLongitude());
                 Log.i(TAG, "Geo callback results: " + gpsPoint);
                 if (gpsCallback != null) {
-                    gpsCallback.update(gpsPoint);
+                    gpsCallback.onLocationChanged(gpsPoint);
                 }
             }
         };
