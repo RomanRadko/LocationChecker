@@ -14,8 +14,8 @@ public class GPSPoint {
     }
 
     GPSPoint(double latitude, double longitude) {
-        this.lat = latitude;
-        this.lon = longitude;
+        lat = latitude;
+        lon = longitude;
     }
 
     @Override
@@ -23,7 +23,7 @@ public class GPSPoint {
         return "(" + lat + ", " + lon + ")";
     }
 
-    public boolean isInRange(Double inLatitude, Double inLongtitude, int radius) {
+    public boolean isInRange(double inLatitude, double inLongtitude, int radius) {
         if (radius <= 0 || inLatitude < -90 || inLatitude > 90 || inLongtitude < -180 || inLongtitude > 180) {
             return false;
         }
