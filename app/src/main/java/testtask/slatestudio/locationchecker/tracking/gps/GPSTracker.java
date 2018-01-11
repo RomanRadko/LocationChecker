@@ -27,7 +27,7 @@ public class GPSTracker {
     private final LocationRequest locationRequest;
     private FusedLocationProviderClient fusedLocationClient;
     private LocationCallback locationCallback;
-    private GPSCallback<GPSPoint> gpsCallback;
+    private GPSCallback gpsCallback;
 
     @SuppressLint("MissingPermission")
     private GPSTracker() {
@@ -59,8 +59,8 @@ public class GPSTracker {
         return instance;
     }
 
-    public void onChange(GPSCallback<GPSPoint> GPSCallback) {
-        this.gpsCallback = GPSCallback;
+    public void onChange(GPSCallback gpsCallback) {
+        this.gpsCallback = gpsCallback;
     }
 
     public void stop() {
