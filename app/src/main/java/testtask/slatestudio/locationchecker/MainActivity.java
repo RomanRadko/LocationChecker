@@ -119,6 +119,10 @@ public class MainActivity extends AppCompatActivity implements StatusListener {
             int radius = Integer.parseInt(radiusInput.getText().toString());
             locationTracker.setTargetRadius(radius);
         }
+        mapView.setPoints(locationTracker.getStatus().getCurrentLocation(),
+                locationTracker.getStatus().getTargetLocation(),
+                locationTracker.getStatus().getRadius());
+
     }
 
     @OnTextChanged(R.id.network_name)
@@ -133,7 +137,6 @@ public class MainActivity extends AppCompatActivity implements StatusListener {
         markIsInWifiRange(status.isInWifiRange());
         markIsInGeoRange(status.isInGeoRange());
         gpsPointStatus.setText(status.getCurrentLocation().toString());
-        mapView.setPoints(status.getCurrentLocation(), status.getTargetLocation(), status.getRadius());
     }
 
     private void fetchNetworkName() {

@@ -23,6 +23,7 @@ public class LocationTracker implements WifiReceiverCallback, GPSCallback {
     private String networkName;
     private int radius;
     private String currentWifiName;
+    private Status status;
 
     public LocationTracker(StatusListener listener) {
         this.listener = listener;
@@ -40,18 +41,6 @@ public class LocationTracker implements WifiReceiverCallback, GPSCallback {
         changeStatus();
     }
 
-    private void changeStatus() {
-        Status status = Status.newBuilder()
-                .setInRange(isInRange())
-                .setInWifiRange(isInWifiRange())
-                .setInGeoRange(isInGeoRange())
-                .setCurrentLocation(currentLocation)
-                .setTargetLocation(targetLocation)
-                .setRadius(radius)
-                .setCurrentWifiName(currentWifiName).build();
-        listener.onStatusChanged(status);
-    }
-
     public void setTargetNetworkName(String networkName) {
         this.networkName = networkName;
     }
@@ -62,10 +51,6 @@ public class LocationTracker implements WifiReceiverCallback, GPSCallback {
 
     public boolean isInRange() {
         return isInWifiRange() || isInGeoRange();
-    }
-
-    private boolean isInGeoRange() {
-        return targetLocation != null && currentLocation.isInRange(targetLocation.getLat(), targetLocation.getLon(), radius);
     }
 
     public void setConnectedNetworkName(String connectedNetworkName) {
@@ -88,5 +73,25 @@ public class LocationTracker implements WifiReceiverCallback, GPSCallback {
             Log.d(TAG, "connected : " + connected);
         }
         return connected;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    private boolean isInGeoRange() {
+        return targetLocation != null && currentLocation.isInRange(targetLocation.getLat(), targetLocation.getLon(), radius);
+    }
+
+    private void changeStatus() {
+        status = Status.newBuilder()
+                .setInRange(isInRange())
+                .setInWifiRange(isInWifiRange())
+                .setInGeoRange(isInGeoRange())
+                .setCurrentLocation(currentLocation)
+                .setTargetLocation(targetLocation)
+                .setRadius(radius)
+                .setCurrentWifiName(currentWifiName).build();
+        listener.onStatusChanged(status);
     }
 }
