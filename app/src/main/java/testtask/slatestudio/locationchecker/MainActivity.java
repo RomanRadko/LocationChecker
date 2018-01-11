@@ -18,6 +18,7 @@ import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnTextChanged;
+import testtask.slatestudio.locationchecker.map.MapView;
 import testtask.slatestudio.locationchecker.tracking.gps.GPSCallback;
 import testtask.slatestudio.locationchecker.tracking.gps.GPSPoint;
 import testtask.slatestudio.locationchecker.tracking.gps.GPSTracker;
@@ -53,25 +54,15 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.network_name)
     EditText networkNameInput;
 
-    @OnTextChanged({R.id.geo_point_latitude, R.id.geo_point_longtitude, R.id.radius})
-    void recalculate() {
-        fetchParameters();
-        markIsLocated(isInGeoRange(currentLocation));
-        markIsInGeoRange(isInGeoRange(currentLocation));
-    }
-
-    @OnTextChanged(R.id.network_name)
-    void refreshName() {
-        networkName = networkNameInput.getText().toString();
-        markIsLocated(isInWifiZone());
-        markIsInWifiRange(isInWifiZone());
-    }
+    @BindView(R.id.map_view)
+    MapView mapView;
 
     private double geoPointLatitude;
     private double geoPointLongtitude;
     private int radius;
     private String networkName;
     private WifiBroadcastReceiver wifiReceiver;
+    private GPSPoint destinatedLocation;
     private GPSPoint currentLocation;
 
     @Override
@@ -115,6 +106,20 @@ public class MainActivity extends AppCompatActivity {
         GPSTracker.instance().stop();
     }
 
+    @OnTextChanged({R.id.geo_point_latitude, R.id.geo_point_longtitude, R.id.radius})
+    void recalculate() {
+        fetchParameters();
+        markIsLocated(isInGeoRange());
+        markIsInGeoRange(isInGeoRange());
+    }
+
+    @OnTextChanged(R.id.network_name)
+    void refreshName() {
+        networkName = networkNameInput.getText().toString();
+        markIsLocated(isInWifiZone());
+        markIsInWifiRange(isInWifiZone());
+    }
+
     private void checkPermissionAndStartGeoTracker() {
         if (hasPermissions()) {
             onPermissionResult(true);
@@ -144,10 +149,11 @@ public class MainActivity extends AppCompatActivity {
         GPSTracker.instance().onChange(new GPSCallback<GPSPoint>() {
             @Override
             public void onLocationChanged(GPSPoint newLocation) {
+                Log.d(TAG, "newLocation: " + newLocation);
+                mapView.setPoints(newLocation, destinatedLocation, radius);
                 currentLocation = newLocation;
                 gpsPointStatus.setText(newLocation.toString());
-                Log.d(TAG, "newLocation: " + newLocation);
-                markIsLocated(isInWifiZone() || isInGeoRange(newLocation));
+                markIsLocated(isInWifiZone() || isInGeoRange());
             }
         });
     }
@@ -182,6 +188,7 @@ public class MainActivity extends AppCompatActivity {
         if (!radiusTxt.isEmpty()) {
             radius = Integer.parseInt(radiusInput.getText().toString());
         }
+        destinatedLocation = new GPSPoint(geoPointLatitude, geoPointLongtitude);
     }
 
     private void markIsLocated(boolean isLocated) {
@@ -209,7 +216,7 @@ public class MainActivity extends AppCompatActivity {
         return connected;
     }
 
-    private boolean isInGeoRange(GPSPoint point) {
-        return point.isInRange(geoPointLatitude, geoPointLongtitude, radius);
+    private boolean isInGeoRange() {
+        return currentLocation.isInRange(geoPointLatitude, geoPointLongtitude, radius);
     }
 }

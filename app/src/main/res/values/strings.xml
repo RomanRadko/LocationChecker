@@ -8,8 +8,8 @@
     <string name="in_range">In Range</string>
     <string name="not_in_ranage">Not in range</string>
     <string name="undefined">Undefined</string>
-    <string name="gps_range">GPS range:</string>
-    <string name="gps_point">GPS location:</string>
-    <string name="current_status">Current status:</string>
-    <string name="wifi_range">Wifi range:</string>
+    <string name="gps_range">GPS range: </string>
+    <string name="gps_point">GPS location: </string>
+    <string name="current_status">Current status: </string>
+    <string name="wifi_range">Wifi range: </string>
 </resources>

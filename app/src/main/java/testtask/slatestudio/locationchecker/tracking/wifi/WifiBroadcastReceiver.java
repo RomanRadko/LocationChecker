@@ -18,6 +18,9 @@ public class WifiBroadcastReceiver extends BroadcastReceiver {
     private static final String EMPTY = "";
     private WifiReceiverCallback callback;
 
+    public WifiBroadcastReceiver() {
+    }
+
     public WifiBroadcastReceiver(WifiReceiverCallback callback) {
         this.callback = callback;
     }

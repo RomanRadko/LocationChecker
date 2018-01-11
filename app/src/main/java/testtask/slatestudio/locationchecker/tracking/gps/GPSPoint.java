@@ -13,9 +13,17 @@ public class GPSPoint {
     public GPSPoint() {
     }
 
-    GPSPoint(double latitude, double longitude) {
+    public GPSPoint(double latitude, double longitude) {
         lat = latitude;
         lon = longitude;
+    }
+
+    public double getLat() {
+        return lat;
+    }
+
+    public double getLon() {
+        return lon;
     }
 
     @Override
