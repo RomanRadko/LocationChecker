@@ -1,11 +1,7 @@
 package testtask.slatestudio.locationchecker.tracking;
 
-import android.content.Context;
-import android.net.wifi.WifiInfo;
-import android.net.wifi.WifiManager;
 import android.util.Log;
 
-import testtask.slatestudio.locationchecker.App;
 import testtask.slatestudio.locationchecker.tracking.gps.GPSCallback;
 import testtask.slatestudio.locationchecker.tracking.gps.GPSPoint;
 import testtask.slatestudio.locationchecker.tracking.wifi.WifiReceiverCallback;
@@ -17,13 +13,16 @@ import testtask.slatestudio.locationchecker.tracking.wifi.WifiReceiverCallback;
 public class LocationTracker implements WifiReceiverCallback, GPSCallback {
 
     private static final String TAG = LocationTracker.class.getSimpleName();
-    private final StatusListener listener;
+    private StatusListener listener;
     private GPSPoint currentLocation;
     private GPSPoint targetLocation;
-    private String networkName;
+    private String targetNetworkName;
     private int radius;
     private String currentWifiName;
     private Status status;
+
+    public LocationTracker() {
+    }
 
     public LocationTracker(StatusListener listener) {
         this.listener = listener;
@@ -42,7 +41,7 @@ public class LocationTracker implements WifiReceiverCallback, GPSCallback {
     }
 
     public void setTargetNetworkName(String networkName) {
-        this.networkName = networkName;
+        this.targetNetworkName = networkName;
     }
 
     public void setTargetRadius(int targetRadius) {
@@ -58,21 +57,15 @@ public class LocationTracker implements WifiReceiverCallback, GPSCallback {
     }
 
     public void setTargetPoint(GPSPoint targetPoint) {
-        this.targetLocation = targetPoint;
+        targetLocation = targetPoint;
+    }
+
+    public void setCurrentPoint(GPSPoint currentPoint) {
+        currentLocation = currentPoint;
     }
 
     public boolean isInWifiRange() {
-        boolean connected = false;
-        WifiManager wifiManager = (WifiManager) App.getInstance().getApplicationContext()
-                .getSystemService(Context.WIFI_SERVICE);
-        WifiInfo wifi = wifiManager.getConnectionInfo();
-        if (wifi != null && networkName != null && !networkName.isEmpty()) {
-            String currentWifiName = wifi.getSSID().replace("\"", "");
-            Log.d(TAG, "currentWifiName : " + currentWifiName);
-            connected = networkName.equals(currentWifiName);
-            Log.d(TAG, "connected : " + connected);
-        }
-        return connected;
+        return currentWifiName != null && targetNetworkName != null && currentWifiName.equals(targetNetworkName);
     }
 
     public Status getStatus() {
@@ -90,8 +83,7 @@ public class LocationTracker implements WifiReceiverCallback, GPSCallback {
                 .setInGeoRange(isInGeoRange())
                 .setCurrentLocation(currentLocation)
                 .setTargetLocation(targetLocation)
-                .setRadius(radius)
-                .setCurrentWifiName(currentWifiName).build();
+                .setRadius(radius).build();
         listener.onStatusChanged(status);
     }
 }

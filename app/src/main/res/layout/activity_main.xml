@@ -17,14 +17,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="@string/current_status" />
+            android:text="@string/current_status"
+            android:textSize="18sp" />
 
         <TextView
             android:id="@+id/is_in_range"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="right"
-            android:text="@string/undefined" />
+            android:text="@string/undefined"
+            android:textSize="18sp" />
     </LinearLayout>
 
     <LinearLayout
@@ -90,7 +92,7 @@
         android:layout_height="wrap_content">
 
         <EditText
-            android:id="@+id/geo_point_latitude"
+            android:id="@+id/geo_point_lat"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -100,7 +102,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <EditText
-            android:id="@+id/geo_point_longtitude"
+            android:id="@+id/geo_point_lon"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -133,7 +135,8 @@
     <testtask.slatestudio.locationchecker.map.MapView
         android:id="@+id/map_view"
         android:layout_width="match_parent"
-        android:layout_height="350dp" />
+        android:layout_height="350dp"
+        android:layout_marginTop="20dp" />
 
 </LinearLayout>
 

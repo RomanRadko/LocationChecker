@@ -68,8 +68,6 @@ public class MapView extends FrameLayout {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-
-        // Load image now that we have valid sizes
         loadStaticMap(mMapUrl);
     }
 
@@ -109,6 +107,7 @@ public class MapView extends FrameLayout {
         Picasso.with(App.getInstance())
                 .load(mapUri)
                 .resize(rawWidth, rawHeight)
+                .placeholder(R.drawable.placeholder)
                 .centerCrop()
                 .into(mMapImage);
     }
