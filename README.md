@@ -1,5 +1,7 @@
-The goal of this assignment is to create an Android application that will detect if the device is located inside of a geofence area.
+Input parameters:
 
-Geofence area is defined as a combination of some geographic point, radius, and specific Wifi network name. A device is considered to be inside of the geofence area if the device is connected to the specified WiFi network or remains geographically inside the defined circle.
+    1. Latitude and longtitude for the specified geo point in degrees.
+    2. Radius of the spectated area in meters (your current location treats as the center).
+    3. Name of the wifi network.
 
-Note that if device coordinates are reported outside of the zone, but the device still connected to the specific Wifi network, then the device is treated as being inside the geofence area.
+Output is the result of entry into the area.
