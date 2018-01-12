@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.wifi.SupplicantState;
-import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.util.Log;
 
@@ -18,9 +17,6 @@ public class WifiBroadcastReceiver extends BroadcastReceiver {
     private static final String EMPTY = "";
     private WifiReceiverCallback callback;
 
-    public WifiBroadcastReceiver() {
-    }
-
     public WifiBroadcastReceiver(WifiReceiverCallback callback) {
         this.callback = callback;
     }
@@ -28,19 +24,19 @@ public class WifiBroadcastReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
-        if (WifiManager.SUPPLICANT_STATE_CHANGED_ACTION.equals(action)) {
+        if (WifiManager.NETWORK_STATE_CHANGED_ACTION.equals(action)) {
             SupplicantState state = intent.getParcelableExtra(WifiManager.EXTRA_NEW_STATE);
-            if (SupplicantState.isValidState(state) && state == SupplicantState.COMPLETED) {
+            if (SupplicantState.isValidState(state)) {
                 callback.onCurrentWifiChanged(getWifiZoneName(context));
             }
         }
     }
 
     private String getWifiZoneName(Context context) {
-        WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
-        WifiInfo wifi = wifiManager.getConnectionInfo();
-        if (wifi != null) {
-            String currentWifiName = wifi.getSSID().replace("\"", "");
+        WifiManager wifiManager = (WifiManager) context.getApplicationContext()
+                .getSystemService(Context.WIFI_SERVICE);
+        if (wifiManager != null && wifiManager.getConnectionInfo() != null) {
+            String currentWifiName = wifiManager.getConnectionInfo().getSSID().replace("\"", "");
             Log.d(TAG, "currentWifiName : " + currentWifiName);
             return currentWifiName;
         }

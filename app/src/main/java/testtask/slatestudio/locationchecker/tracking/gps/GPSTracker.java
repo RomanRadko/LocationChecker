@@ -59,18 +59,18 @@ public class GPSTracker {
         return instance;
     }
 
-    public void onChange(GPSCallback gpsCallback) {
+    public void setGPSCallback(GPSCallback gpsCallback) {
         this.gpsCallback = gpsCallback;
-    }
-
-    public void stop() {
-        Log.i(TAG, "Stop tracking");
-        fusedLocationClient.removeLocationUpdates(locationCallback);
     }
 
     @SuppressLint("MissingPermission")
     public void start() {
         fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper());
+    }
+
+    public void stop() {
+        Log.i(TAG, "Stop tracking");
+        fusedLocationClient.removeLocationUpdates(locationCallback);
     }
 
 }

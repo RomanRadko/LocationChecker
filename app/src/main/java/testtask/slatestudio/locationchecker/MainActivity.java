@@ -4,7 +4,6 @@ import android.Manifest;
 import android.content.Context;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -19,9 +18,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnTextChanged;
 import testtask.slatestudio.locationchecker.map.MapView;
-import testtask.slatestudio.locationchecker.tracking.StatusListener;
-import testtask.slatestudio.locationchecker.tracking.Status;
 import testtask.slatestudio.locationchecker.tracking.LocationTracker;
+import testtask.slatestudio.locationchecker.tracking.Status;
+import testtask.slatestudio.locationchecker.tracking.StatusListener;
 import testtask.slatestudio.locationchecker.tracking.gps.GPSPoint;
 import testtask.slatestudio.locationchecker.tracking.gps.GPSTracker;
 import testtask.slatestudio.locationchecker.tracking.wifi.WifiBroadcastReceiver;
@@ -136,14 +135,15 @@ public class MainActivity extends AppCompatActivity implements StatusListener {
         markIsLocated(isInRangeLabel, status.isInRange());
         markIsLocated(wifiRangeLabel, status.isInWifiRange());
         markIsLocated(gpsRangeLabel, status.isInGeoRange());
-        gpsPointLabel.setText(status.getCurrentLocation().toString());
+        if (status.getCurrentLocation() != null) {
+            gpsPointLabel.setText(status.getCurrentLocation().toString());
+        }
     }
 
     private void fetchNetworkName() {
         WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-        WifiInfo wifi = wifiManager.getConnectionInfo();
-        if (wifi != null) {
-            String currentWifiName = wifi.getSSID().replace("\"", "");
+        if (wifiManager != null && wifiManager.getConnectionInfo() != null) {
+            String currentWifiName = wifiManager.getConnectionInfo().getSSID().replace("\"", "");
             Log.d(TAG, "currentWifiName : " + currentWifiName);
             locationTracker.setConnectedNetworkName(currentWifiName);
         }
@@ -175,7 +175,7 @@ public class MainActivity extends AppCompatActivity implements StatusListener {
 
     private void startGeoTracker() {
         GPSTracker.instance().start();
-        GPSTracker.instance().onChange(locationTracker);
+        GPSTracker.instance().setGPSCallback(locationTracker);
     }
 
     private boolean hasPermissions() {

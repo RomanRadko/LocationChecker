@@ -37,6 +37,7 @@ public class LocationTracker implements WifiReceiverCallback, GPSCallback {
 
     @Override
     public void onCurrentWifiChanged(String wifiNetworkName) {
+        currentWifiName = wifiNetworkName;
         changeStatus();
     }
 
@@ -83,7 +84,8 @@ public class LocationTracker implements WifiReceiverCallback, GPSCallback {
                 .setInGeoRange(isInGeoRange())
                 .setCurrentLocation(currentLocation)
                 .setTargetLocation(targetLocation)
-                .setRadius(radius).build();
+                .setRadius(radius)
+                .setCurrentWifiName(currentWifiName).build();
         listener.onStatusChanged(status);
     }
 }

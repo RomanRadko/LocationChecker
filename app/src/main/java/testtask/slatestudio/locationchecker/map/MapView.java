@@ -27,11 +27,16 @@ public class MapView extends FrameLayout {
     private static final int DEFAULT_ZOOM_LEVEL = 15;
     private static final int GOOGLE_WATERMARKS_HEIGHT_PIXELS = 52;
     private static final double POINTS_DIF_DELTA = 0.001;
+    private static final int GOOGLE_MAPS_MAX_SIZE = 640;
+    private static final float CROP_RATIO = 0.58f;
 
     protected Uri mMapUrl;
     protected boolean mMapWasLoaded = false;
 
     protected ImageView mMapImage;
+    private float width;
+    private float height;
+    private int scale;
 
     public MapView(Context context) {
         super(context);
@@ -93,12 +98,11 @@ public class MapView extends FrameLayout {
         mMapWasLoaded = true;
         rawHeight += (GOOGLE_WATERMARKS_HEIGHT_PIXELS * 2);
 
-        GoogleMapImageSizeHelper apiImageSizeHelper = new GoogleMapImageSizeHelper();
-        apiImageSizeHelper.calcSizes(rawWidth, rawHeight);
+        calcSizes(rawWidth, rawHeight);
 
         mapUri = mapUri.buildUpon()
-                .appendQueryParameter("size", "" + apiImageSizeHelper.getWidth() + "x" + apiImageSizeHelper.getHeight())
-                .appendQueryParameter("scale", String.valueOf(apiImageSizeHelper.getScale()))
+                .appendQueryParameter("size", "" + width + "x" + height)
+                .appendQueryParameter("scale", String.valueOf(scale))
                 .build();
 
         String mapUrl = mapUri.toString();
@@ -135,6 +139,25 @@ public class MapView extends FrameLayout {
     private boolean isSubstantiallyChanged(GPSPoint currentLocation, GPSPoint newLocation) {
         return Math.abs(currentLocation.getLat() - newLocation.getLat()) > POINTS_DIF_DELTA
                 || Math.abs(currentLocation.getLon() - newLocation.getLon()) > POINTS_DIF_DELTA;
+    }
+
+    private void calcSizes(int inWidth, int inHeight) {
+        width = inWidth;
+        height = inHeight;
+        scale = 2;
+        if (width > GOOGLE_MAPS_MAX_SIZE || height > GOOGLE_MAPS_MAX_SIZE) {
+            float widthShrinkRatio = width / (float) GOOGLE_MAPS_MAX_SIZE;
+            float heightShrinkRatio = height / (float) GOOGLE_MAPS_MAX_SIZE;
+            if (widthShrinkRatio > heightShrinkRatio) {
+                width = GOOGLE_MAPS_MAX_SIZE;
+                height /= widthShrinkRatio;
+            } else {
+                height = GOOGLE_MAPS_MAX_SIZE;
+                width /= heightShrinkRatio;
+            }
+        }
+        height = Math.round(height * CROP_RATIO);
+        width = Math.round(width * CROP_RATIO);
     }
 
 }

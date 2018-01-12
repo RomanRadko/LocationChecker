@@ -15,6 +15,7 @@ public class Status {
     private GPSPoint currentLocation;
     private GPSPoint targetLocation;
     private int radius;
+    private String currentWifiName;
 
     private Status() {
     }
@@ -74,6 +75,11 @@ public class Status {
 
         Builder setTargetLocation(GPSPoint targetLocation) {
             Status.this.targetLocation = targetLocation;
+            return this;
+        }
+
+        Builder setCurrentWifiName(String currentWifiName) {
+            Status.this.currentWifiName = currentWifiName;
             return this;
         }
 
