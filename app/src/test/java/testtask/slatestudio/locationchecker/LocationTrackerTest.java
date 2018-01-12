@@ -37,27 +37,47 @@ public class LocationTrackerTest {
     }
 
     @Test
-    public void testGPSRadiusPositiveLocation() throws Exception {
-        tracker.setTargetPoint(new GPSPoint(50.122f, 34.523f));
-        tracker.setCurrentPoint(new GPSPoint(50.123f, 34.522f));
+    public void testGPSRadiusLocationPositive() throws Exception {
+        tracker.setTargetPoint(new GPSPoint(50.122, 34.523));
+        tracker.setCurrentPoint(new GPSPoint(50.123, 34.522));
         tracker.setTargetRadius(500);
         assertEquals("Location should be in range with such radius.", true, tracker.isInRange());
     }
 
     @Test
-    public void testGPSRadiusNegativeLocation() throws Exception {
-        tracker.setTargetPoint(new GPSPoint(50.122f, 34.523f));
-        tracker.setCurrentPoint(new GPSPoint(50.123f, 34.522f));
+    public void testGPSRadiusLocationNegative() throws Exception {
+        tracker.setTargetPoint(new GPSPoint(50.122, 34.523));
+        tracker.setCurrentPoint(new GPSPoint(50.123, 34.522));
         tracker.setTargetRadius(50);
         assertEquals("Location should not be in range with such radius.", false, tracker.isInRange());
     }
 
     @Test
-    public void testGPSPointNegativeLocation() throws Exception {
-        tracker.setTargetPoint(new GPSPoint(50.122f, 34.523f));
-        tracker.setCurrentPoint(new GPSPoint(40.123f, 44.522f));
+    public void testGPSPointLocationNegative() throws Exception {
+        tracker.setTargetPoint(new GPSPoint(50.122, 34.523));
+        tracker.setCurrentPoint(new GPSPoint(40.123, 44.522));
         tracker.setTargetRadius(500);
         assertEquals("Location should not be in range with such radius and target point.", false, tracker.isInRange());
+    }
+
+    @Test
+    public void testInRangeGPSPositive() throws Exception {
+        tracker.setTargetPoint(new GPSPoint(50.122, 34.523));
+        tracker.setCurrentPoint(new GPSPoint(50.123, 34.522));
+        tracker.setTargetRadius(500);
+        tracker.setConnectedNetworkName("TesT");
+        tracker.setTargetNetworkName("tEsT");
+        assertEquals("Location should be in range with such radius and target point, even if wifi is different.", true, tracker.isInRange());
+    }
+
+    @Test
+    public void testInRangeWifiPositive() throws Exception {
+        tracker.setTargetPoint(new GPSPoint(50.122, 34.523));
+        tracker.setCurrentPoint(new GPSPoint(40.123, 44.522));
+        tracker.setTargetRadius(500);
+        tracker.setConnectedNetworkName("TEST");
+        tracker.setTargetNetworkName("TEST");
+        assertEquals("Location should be in range, as wifi in range.", true, tracker.isInRange());
     }
 
 }
