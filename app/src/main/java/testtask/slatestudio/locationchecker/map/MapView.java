@@ -30,12 +30,11 @@ public class MapView extends FrameLayout {
     private static final int GOOGLE_MAPS_MAX_SIZE = 640;
     private static final float CROP_RATIO = 0.58f;
 
-    protected Uri mMapUrl;
-    protected boolean mMapWasLoaded = false;
-
-    protected ImageView mMapImage;
-    private float width;
-    private float height;
+    private Uri mMapUrl;
+    private boolean mMapWasLoaded = false;
+    private ImageView mMapImage;
+    private int width;
+    private int height;
     private int scale;
 
     public MapView(Context context) {
